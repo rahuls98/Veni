@@ -1,2 +1,6 @@
 # splitzcreig
-A split screen video editor that allows easy flow and layout customisations.
+
+Here's my first attempt at creating a full fledged React application. 
+Details coming up soon...
+
+P.s. It's not just another task manager app.
