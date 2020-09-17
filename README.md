@@ -1,7 +1,6 @@
-# splitzcreig
+# Veni
 
-Here's my first attempt at creating a full fledged React application. 
-<br>Details coming up soon.
+Details coming up soon.
 <hr>
 
 #### References 
