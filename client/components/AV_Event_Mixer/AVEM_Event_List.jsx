@@ -1,6 +1,12 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import AVEM_Audio_Upload from './AVEM_Audio_Upload';
 
-const AVEM_Event_List = ({ events, handleDeleteEvent }) => {
+const AVEM_Event_List = ({ events, handleDeleteEvent, handleAudioMetadata }) => {
+    const [viewModal, setViewModal] = useState(false);
+    const [uploadedAudio, setUploadedAudio] = useState({});
+    const [selectedEvent, setSelectedEvent] = useState("0");
+    const [audio, setAudio] = useState({});
+
     const eventItemStyle = {
         padding: "20px",
         fontSize: "1.8vw",
@@ -34,6 +40,37 @@ const AVEM_Event_List = ({ events, handleDeleteEvent }) => {
         return(`${m}:${s}:${ms}`);
     }
 
+    const handleModalOpen = (e, ts) => {
+        e.preventDefault();
+        setViewModal(true);
+        setSelectedEvent(ts);
+    }
+
+    const handleModalClose = (e, choice, files) => {
+        e.preventDefault();
+        setViewModal(false);
+
+        const audioObj = { id:choice, timestamp:events[`${selectedEvent}`].timestamp ,...files[choice]};
+        const temp = {...audio};
+        temp[`${selectedEvent}`] = audioObj;
+        setAudio(temp);
+        setUploadedAudio(files);
+        handleAudioMetadata(temp);
+    }
+
+    const handleDeleteAudio = (e, ts) => {
+        e.preventDefault();
+        const temp = {...audio};
+        delete temp[ts];
+        setAudio(temp);
+        handleDeleteEvent(e, ts);
+    }
+
+    useEffect(() => {
+        var modalContainer = document.getElementById("modal_container");
+        modalContainer.style.display =  viewModal? "block" : "none";
+    }, [viewModal]);
+
     return (
         <div>
             {
@@ -43,8 +80,9 @@ const AVEM_Event_List = ({ events, handleDeleteEvent }) => {
                         <div key={timestamp} style={ eventItemStyle }>
                             <span style={timestampStyle}>{timeFormat(events[timestamp].timestamp)}</span>
                             <span style={titleStyle}>{` : ${events[timestamp].title} `}</span>
-                            <span style={{float:"right", marginRight: "10px"}}>
-                                <button onClick={e => handleDeleteEvent(e, timestamp)}>
+                            <span style={{float:"right", marginRight: "5px"}}>
+                                <button className="secondary-btn" onClick={e => handleModalOpen(e, timestamp)}>Attach Audio</button>
+                                <button className="secondary-btn" id="trash-btn" onClick={e => handleDeleteAudio(e, timestamp)}>
                                     <i className="fa fa-trash" style={{fontSize:"1.5vw"}}></i>
                                 </button>
                             </span>
@@ -52,6 +90,7 @@ const AVEM_Event_List = ({ events, handleDeleteEvent }) => {
                     )
                 }) : <p style={{ color:"gray", textAlign:"center", marginTop:"10vh" }}>No events attached!</p>
             }
+            {viewModal ? <AVEM_Audio_Upload uploadedAudio={uploadedAudio} handleModalClose={handleModalClose}/> : null}
         </div>
     )
 }

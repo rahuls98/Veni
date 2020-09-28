@@ -1,7 +1,8 @@
 import React, {useState} from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
-import 'regenerator-runtime/runtime'
+import { avemStorage, avemFirestore, uploadTimestamp } from '../../firebase/config'; 
+/* import axios from 'axios'; */
+import 'regenerator-runtime/runtime' 
 
 const AVEM = () => {
     const [file, setFile] = useState();
@@ -16,7 +17,7 @@ const AVEM = () => {
         setFilename(e.target.files[0].name);
     }
 
-    const handleUpload = async e => {
+    /* const handleUpload = async e => {
         e.preventDefault();
         setViewProgress(true);
         const PREFIX = 'http://localhost:8000/av_mixer';
@@ -42,6 +43,35 @@ const AVEM = () => {
             if(err.response.status === 500) console.log("Server error!");
             else console.log(err.response.data.msg);
         }
+    } */
+
+    const handleUpload = (e) => {
+        e.preventDefault();
+        setViewProgress(true);
+        
+        const storageRef = avemStorage.ref(file.name);
+        const collectionRef = avemFirestore.collection('video-assets');
+
+        storageRef.put(file).on('state_changed', (snap) => {
+            setUploadPercentage(
+                ((snap.bytesTransferred / snap.totalBytes) * 100).toString() + '%'
+            );   
+        }, (err) => {
+            // error during upload
+            console.log("DEBUG LOG: handleUpload -> err", err); 
+        }, async () => {
+            // successful upload
+            const url = await storageRef.getDownloadURL();
+            const createdAt = uploadTimestamp();
+            collectionRef.add({ url, createdAt });
+
+            const uploadObj = {fileName: filename ,filePath: url };
+            setUploadedFile(uploadObj);
+
+            setViewProgress(false);
+            setUploadStatus(true);
+            setUploadPercentage("0");
+        })
     }
 
     return (
@@ -70,7 +100,12 @@ const AVEM = () => {
                         </div> : uploadStatus ? 
                                 <div>
                                     <span>File uploaded!</span>
-                                    <Link to='/avem_event_selection'><button><i class="fa fa-arrow-right"></i></button></Link>
+                                    <Link to={{
+                                                pathname: '/avem_event_selection',
+                                                state: { ...uploadedFile }
+                                            }}>
+                                        <button><i className="fa fa-arrow-right"></i></button>
+                                    </Link>
                                 </div> : null
                     }
                     </div>
