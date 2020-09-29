@@ -355,4 +355,20 @@ li:hover {
   border-radius: 20px;
   background-color: #32e0c4;
 }
+
+.AVEM_Final_Cut_Container {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.AVEM_Final_Cut_Container video {
+  margin-top: 10vh;
+}
 /*# sourceMappingURL=style.css.map */

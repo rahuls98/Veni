@@ -1,8 +1,11 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react';
+import { useLocation, useHistory } from 'react-router-dom';
 
 const AVEM_Final_Cut = (props) => {
-    const [source, setSource] = useState( props.location.state.source );
-    const [audio,setAudio] = useState( props.location.state.audio )
+    const { state } = useLocation();
+    console.log('state :>> ', state);
+    const history = useHistory();
+    const { source, audio } = {...state};
 
     const playAudio = (id, delay) => {
         const audio = document.getElementById(id);
@@ -14,22 +17,23 @@ const AVEM_Final_Cut = (props) => {
 
     const playFinal = () => {
         Object.keys(audio).forEach(timestamp => playAudio(audio[timestamp].id, audio[timestamp].timestamp));
-        console.log("List complete!");
     }
-
-    useEffect(() => {
-        console.log('source :>> ', source);
-        console.log('audio :>> ', audio);
-    })
 
     return (
         <div className="AVEM_Final_Cut_Container">
+            <div>
             <video id="finalCut" controls src={source} type="video/mp4" onPlay={() => playFinal()}></video>
             {
                 Object.keys(audio).map(timestamp => {
-                    return <audio id={audio[timestamp].id} src={audio[timestamp].filePath}></audio>
+                    return ( <audio id={audio[timestamp].id} 
+                                    src={audio[timestamp].filePath}
+                                    key={timestamp}
+                            ></audio> )
                 })
             }
+            <br />
+            <button className="primary-btn" onClick={e => history.goBack()}>Back</button>
+            </div>
         </div>
     )
 }

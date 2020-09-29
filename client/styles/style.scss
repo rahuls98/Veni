@@ -329,3 +329,11 @@ li {
         }
     }
 }
+
+.AVEM_Final_Cut_Container {
+    @include xyCenter();
+
+    video {
+        margin-top: 10vh;
+    }
+}

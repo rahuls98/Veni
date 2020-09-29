@@ -69,11 +69,6 @@ const AVEM_Event_Selection = ( props ) => {
         setVideoMetadata(metadata);
     }
 
-    /* const handleDataPass = (e) => {
-        e.preventDefault();
-        window.localStorage.setItem('videoMetadata', JSON.stringify(videoMetadata));
-    } */
-
     return (
         <div className="AVEM_Event_Selection_Container">
             <div className="row">
@@ -99,9 +94,13 @@ const AVEM_Event_Selection = ( props ) => {
                     <AVEM_Event_List events={events} handleDeleteEvent={handleDeleteEvent} handleAudioMetadata={handleAudioMetadata}/>
                 </div>
             </div>
-            {/* <Link to='/avem_final_cut'>
-                <button style={{float: "right"}} className="primary-btn" onClick={e => handleDataPass(e)}>Preview</button>
-            </Link> */}
+            <Link to={{
+                    pathname: '/avem_final_cut',
+                    state: { source: videoMetadata.source, audio: videoMetadata.audio }
+                }}
+            >
+                <button style={{float: "right", marginRight: "20px"}} className="primary-btn">Preview</button>
+            </Link>
         </div>
     )
 }
